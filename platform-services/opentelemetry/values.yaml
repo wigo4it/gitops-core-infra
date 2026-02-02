@@ -48,7 +48,10 @@ rbac:
 
 # Admission webhooks
 admissionWebhooks:
-  create: false  # Disable webhooks for local dev (no cert-manager)
+  create: true  # Enable webhooks (cert-manager will provide certificates)
+  autoGenerateCert: true  # Use cert-manager to auto-generate certificates
+  certManager:
+    enabled: true  # Use cert-manager for webhook certificates
 
 # Feature gates
 manager:
