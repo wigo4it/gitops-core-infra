@@ -2,14 +2,20 @@
 # Minimal resource allocation for local testing
 
 operator:
-  # Reduced resources for local
+  # Increased resources for Quarkus-based operator
   resources:
     limits:
-      cpu: 200m
-      memory: 128Mi
+      cpu: 500m
+      memory: 512Mi
     requests:
-      cpu: 50m
-      memory: 64Mi
+      cpu: 100m
+      memory: 256Mi
+  
+  # Increase startup probe timeout for slower local environments
+  startupProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 30  # Allow up to 5 minutes for startup
 
 # Keycloak instance disabled - deploy operator only
 keycloak:
