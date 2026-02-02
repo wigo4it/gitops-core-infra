@@ -4,7 +4,7 @@
 # Chart: https://artifacthub.io/packages/helm/hostzero-keycloak-operator/keycloak-operator
 
 chartName: keycloak-operator
-chartRepoURL: oci://ghcr.io/hostzero-gmbh/charts
+chartRepoURL: oci://ghcr.io/hostzero-gmbh/charts/keycloak-operator
 targetNamespace: keycloak-system
 
 # Version control per cluster
