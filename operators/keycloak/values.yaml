@@ -1,0 +1,49 @@
+# Base Helm values for Keycloak Operator
+# Chart: hostzero-keycloak-operator
+# Documentation: https://artifacthub.io/packages/helm/hostzero-keycloak-operator/keycloak-operator
+
+# Operator configuration
+replicaCount: 1
+
+image:
+  repository: ghcr.io/hostzero-gmbh/keycloak-operator
+  pullPolicy: IfNotPresent
+  # tag: defaults to chart appVersion
+
+# Resources for the operator pod
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Leader election for HA
+leaderElection:
+  enabled: true
+
+# Metrics configuration
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false  # Set to true if Prometheus operator is available
+
+# CRD management
+crds:
+  install: true
+  keep: true  # Keep CRDs on uninstall
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 65532
+
+# Additional labels
+labels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
