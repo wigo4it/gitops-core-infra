@@ -20,12 +20,12 @@ spec:
         generator:
           matrix:
             generators:
-# Discover platform services via .argocd.yaml files
-          - git:
-              repoURL: https://github.com/wigo4it/gitops-core-infra.git
-              revision: HEAD
-              files:
-                - path: "platform-services/**/.argocd.yaml"
+              # Discover platform services via .argocd.yaml files
+              - git:
+                  repoURL: https://github.com/wigo4it/gitops-core-infra.git
+                  revision: HEAD
+                  files:
+                    - path: "platform-services/**/.argocd.yaml"
               
               # Only generate for registered clusters
               - clusters:

@@ -1,0 +1,67 @@
+# Base Helm values for OpenTelemetry Operator
+# Chart: open-telemetry/opentelemetry-operator
+# Documentation: https://github.com/open-telemetry/opentelemetry-helm-charts/tree/main/charts/opentelemetry-operator
+
+# Replica count
+replicaCount: 1
+
+# Manager configuration
+manager:
+  image:
+    repository: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
+    tag: ""  # Use chart default
+  
+  # Resource limits
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # Service Account
+  serviceAccount:
+    create: true
+    name: opentelemetry-operator
+
+  # Pod annotations
+  podAnnotations: {}
+
+  # Pod security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    fsGroup: 65534
+
+  # Container security context
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+
+# RBAC
+rbac:
+  create: true
+
+# Admission webhooks
+admissionWebhooks:
+  create: false  # Disable webhooks for local dev (no cert-manager)
+
+# Feature gates
+manager:
+  featureGates: ""
+
+# Watch namespaces (empty = all)
+watchNamespaces: []
+
+# Prometheus monitoring
+prometheus:
+  enabled: true
+
+# Additional labels
+additionalLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
