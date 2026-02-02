@@ -9,20 +9,34 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-    # Matrix generator combining operator discovery with cluster list
-    - matrix:
-        generators:
-          # Discover operators via .argocd.yaml files
-          - git:
-              repoURL: https://github.com/wigo4it/gitops-core-infra.git
-              revision: HEAD
-              files:
-                - path: "operators/**/.argocd.yaml"
-          
-          # Only generate for registered clusters
-          - clusters:
-              selector:
-                matchLabels: {}  # Match all registered clusters
+    # Selector generator to filter based on enabled flag
+    - selector:
+        matchExpressions:
+          # Only generate if enabled is not explicitly false
+          # Uses the logic: enabled == true OR enabled is not set (default true)
+          - key: enabled
+            operator: In
+            values: ["true", ""]  # true or undefined (defaults to true)
+        generator:
+          matrix:
+            generators:
+              # Discover operators via .argocd.yaml files
+              - git:
+                  repoURL: https://github.com/wigo4it/gitops-core-infra.git
+                  revision: HEAD
+                  files:
+                    - path: "operators/**/.argocd.yaml"
+              
+              # Only generate for registered clusters
+              - clusters:
+                  selector:
+                    matchLabels: {}  # Match all registered clusters
+            
+            # Add enabled field to template for selector matching
+            template:
+              metadata:
+                labels:
+                  enabled: '{{if index (index .clusters .name) "enabled"}}{{index (index .clusters .name) "enabled"}}{{else}}true{{end}}'
   
   template:
     metadata:
