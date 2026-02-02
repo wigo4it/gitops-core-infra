@@ -1,21 +1,16 @@
 # Keycloak Operator - Local Development Cluster
 # Minimal resource allocation for local testing
 
-# Reduced resources for local
-resources:
-  limits:
-    cpu: 200m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
+operator:
+  # Reduced resources for local
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
-# Disable leader election in single-node dev
-leaderElection:
+# Keycloak instance disabled - deploy operator only
+keycloak:
   enabled: false
-
-# Enable metrics for local testing
-metrics:
-  enabled: true
-  serviceMonitor:
-    enabled: false
