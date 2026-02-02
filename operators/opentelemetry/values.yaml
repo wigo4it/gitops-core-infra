@@ -49,8 +49,7 @@ rbac:
 # Admission webhooks
 admissionWebhooks:
   create: true
-  autoGenerateCert:
-    enabled: true
+  autoGenerateCert: true  # Boolean value, not an object
 
 # Feature gates
 manager:
