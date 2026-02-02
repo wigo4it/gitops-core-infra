@@ -1,34 +1,46 @@
-# Environment-specific overrides for RabbitMQ in Commonground prod
-# Inherits from: operators/rabbitmq/values.yaml
-
-additionalLabels:
-  managed-by: argocd
-  cluster: commonground
-  environment: prod
-
-# High availability
-replicaCount: 2
-
-# Production resources
-resources:
-  limits:
-    cpu: 1000m
-    memory: 1Gi
-  requests:
-    cpu: 500m
-    memory: 512Mi
+# RabbitMQ Operator - Commonground Production
+# Production environment for Commonground clusters
 
 clusterOperator:
-  logLevel: warn
-  watchNamespace: ""
+  # HA with 2 replicas
+  replicaCount: 2
+  
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+  
+  pdb:
+    create: true
+    minAvailable: 1
+  
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: rabbitmq-cluster-operator
+            topologyKey: kubernetes.io/hostname
+  
+  metrics:
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
 
-# Anti-affinity for HA
-affinity:
-  podAntiAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: rabbitmq-cluster-operator
-          topologyKey: kubernetes.io/hostname
+msgTopologyOperator:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  
+  pdb:
+    create: true

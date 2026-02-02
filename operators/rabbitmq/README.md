@@ -5,8 +5,9 @@
 The RabbitMQ Cluster Kubernetes Operator automates provisioning, management, and operations of RabbitMQ clusters running on Kubernetes. It provides a declarative way to deploy and manage RabbitMQ clusters with custom resources.
 
 **Official Documentation:** https://www.rabbitmq.com/kubernetes/operator/operator-overview.html  
-**Helm Chart:** https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator  
-**GitHub:** https://github.com/rabbitmq/cluster-operator
+**Helm Chart:** https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq-cluster-operator  
+**Upstream Operator:** https://github.com/rabbitmq/cluster-operator  
+**Chart Repository:** oci://registry-1.docker.io/cloudpirates/rabbitmq-cluster-operator
 
 ## What Does RabbitMQ Cluster Operator Do?
 
@@ -74,17 +75,17 @@ Versions are managed per-cluster in [.argocd.yaml](.argocd.yaml):
 ```yaml
 clusters:
   local-dev:
-    chartVersion: "4.3.0"       # Latest for testing
+    chartVersion: "0.1.5"       # Latest CloudPirates version
   aks-ikv-nonprod-vnext:
-    chartVersion: "4.3.0"       # Testing
+    chartVersion: "0.1.5"       # Latest version
   aks-ikv-nonprod:
-    chartVersion: "4.3.0"       # Validated
+    chartVersion: "0.1.5"       # Latest stable
   aks-ikv-prod:
-    chartVersion: "4.2.5"       # Stable production
+    chartVersion: "0.1.5"       # Latest stable
 ```
 
-**Current Chart Version:** `4.3.0` (nonprod) / `4.2.5` (prod)  
-**Chart Repository:** https://charts.bitnami.com/bitnami  
+**Current Chart Version:** `0.1.5` (all clusters)  
+**Chart Repository:** oci://registry-1.docker.io/cloudpirates  
 **Target Namespace:** `rabbitmq-system`
 
 ### Configuration Files
@@ -386,8 +387,9 @@ kubectl get storageclass
 
 - **Operator Docs:** https://www.rabbitmq.com/kubernetes/operator/operator-overview.html
 - **RabbitMQ Docs:** https://www.rabbitmq.com/documentation.html
-- **GitHub:** https://github.com/rabbitmq/cluster-operator
-- **Bitnami Chart:** https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator
+- **Upstream Operator:** https://github.com/rabbitmq/cluster-operator
+- **Helm Chart:** https://github.com/cloudpirates/rabbitmq-operator
+- **Chart Repository:** https://cloudpirates.github.io/rabbitmq-operator/
 - **Community:** https://groups.google.com/forum/#!forum/rabbitmq-users
 
 ## Support

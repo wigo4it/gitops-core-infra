@@ -1,27 +1,26 @@
-# Environment-specific overrides for RabbitMQ in IKV nonprod
-# Inherits from: operators/rabbitmq/values.yaml
+# RabbitMQ Operator - IKV NonProd
+# Validation environment before production
 
-# Additional labels
-additionalLabels:
-  managed-by: argocd
-  cluster: ikv
-  environment: nonprod
-
-# Resource limits - moderate for nonprod
-resources:
-  limits:
-    cpu: 750m
-    memory: 768Mi
-  requests:
-    cpu: 200m
-    memory: 256Mi
-
-# Service account
-serviceAccount:
-  create: true
-  annotations: {}
-
-# Cluster-specific settings
 clusterOperator:
-  logLevel: info
-  watchNamespace: ""  # Watch all namespaces
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 150m
+      memory: 256Mi
+  
+  metrics:
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+
+msgTopologyOperator:
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 75m
+      memory: 192Mi

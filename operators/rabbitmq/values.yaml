@@ -1,55 +1,52 @@
 # Base Helm values for RabbitMQ Cluster Operator
-# Chart: bitnami/rabbitmq-cluster-operator
-# Documentation: https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator
+# Chart: cloudpirates/rabbitmq-cluster-operator
+# Documentation: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/rabbitmq-cluster-operator
+# Default values: https://github.com/CloudPirates-io/helm-charts/blob/main/charts/rabbitmq-cluster-operator/values.yaml
 
-# Replica count
-replicaCount: 1
+# Cluster Operator Configuration
+clusterOperator:
+  # Resource limits for the operator
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  
+  # Watch all namespaces
+  watchAllNamespaces: true
+  
+  # Number of replicas
+  replicaCount: 1
+  
+  # RBAC
+  rbac:
+    create: true
+  
+  # Service Account
+  serviceAccount:
+    create: true
+  
+  # Metrics
+  metrics:
+    service:
+      enabled: false
 
-image:
-  registry: docker.io
-  repository: bitnami/rabbitmq-cluster-operator
-  tag: ""  # Use chart default
-  pullPolicy: IfNotPresent
-
-# Resource limits
-resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 200m
-    memory: 256Mi
-
-# Service Account
-serviceAccount:
-  create: true
-  name: rabbitmq-operator
-
-# RBAC
-rbac:
-  create: true
-
-# Watch all namespaces
-watchNamespaces: []  # Empty = watch all namespaces
-
-# Pod Security Context
-podSecurityContext:
+# Messaging Topology Operator (manages RabbitMQ resources like Queues, Exchanges)
+msgTopologyOperator:
   enabled: true
-  runAsNonRoot: true
-  runAsUser: 1001
-  fsGroup: 1001
+  
+  resources: {}
+  
+  # RBAC
+  rbac:
+    create: true
+  
+  # Service Account
+  serviceAccount:
+    create: true
 
-# Container Security Context
-containerSecurityContext:
-  enabled: true
-  capabilities:
-    drop:
-    - ALL
-  readOnlyRootFilesystem: true
-  allowPrivilegeEscalation: false
-
-# Logging
-logLevel: info
 
 # Metrics
 metrics:

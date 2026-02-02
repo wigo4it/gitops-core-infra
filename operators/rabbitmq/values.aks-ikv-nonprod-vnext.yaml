@@ -1,21 +1,25 @@
-# Environment-specific overrides for RabbitMQ Operator in IKV nonprod-vnext
-# Inherits from: helm-values/base/rabbitmq-operator.yaml
+# RabbitMQ Operator - IKV NonProd VNext
+# Testing/preview environment for latest operator features
 
-# Additional labels
-commonLabels:
-  managed-by: argocd
-  app.kubernetes.io/component: operator
-  cluster: ikv
-  environment: nonprod-vnext
+clusterOperator:
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 192Mi
+  
+  # Enable metrics for monitoring
+  metrics:
+    service:
+      enabled: true
 
-# Logging - more verbose
-logLevel: debug
-
-# Resources - lower for nonprod
-resources:
-  limits:
-    cpu: 300m
-    memory: 384Mi
-  requests:
-    cpu: 100m
-    memory: 192Mi
+msgTopologyOperator:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi

@@ -1,8 +1,9 @@
 # ArgoCD metadata for RabbitMQ Cluster Operator
 # This file is discovered by the ApplicationSet to deploy RabbitMQ across clusters
+# Using CloudPirates Helm chart: https://github.com/CloudPirates-io/helm-charts
 
 chartName: rabbitmq-cluster-operator
-chartRepoURL: https://charts.bitnami.com/bitnami
+chartRepoURL: oci://registry-1.docker.io/cloudpirates
 targetNamespace: rabbitmq-system
 
 # Version control per cluster
@@ -10,23 +11,23 @@ clusters:
   # Local Development
   local-dev:
     enabled: true
-    chartVersion: "4.3.0"  # Latest for local testing
+    chartVersion: "0.1.5"  # Latest CloudPirates version
   
   # IKV Clusters
   aks-ikv-nonprod-vnext:
     enabled: true
-    chartVersion: "4.3.0"  # Latest version for testing
+    chartVersion: "0.1.5"  # Latest version for testing
   aks-ikv-nonprod:
     enabled: true
-    chartVersion: "4.3.0"  # Validated version
+    chartVersion: "0.1.5"  # Latest stable version
   aks-ikv-prod:
     enabled: true
-    chartVersion: "4.2.5"  # Conservative stable version
+    chartVersion: "0.1.5"  # Latest stable version
   
   # Commonground Clusters - TODO: Update cluster names when provided
   aks-commonground-nonprod:
     enabled: true
-    chartVersion: "4.3.0"
+    chartVersion: "0.1.5"
   aks-commonground-prod:
     enabled: true
-    chartVersion: "4.2.5"
+    chartVersion: "0.1.5"
