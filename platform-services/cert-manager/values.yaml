@@ -1,0 +1,49 @@
+# Base cert-manager configuration
+# Applied to all clusters, overridden by values.{cluster}.yaml
+
+# Install CRDs
+installCRDs: true
+
+# Global configuration
+global:
+  leaderElection:
+    namespace: cert-manager
+
+# Controller configuration
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Webhook configuration
+webhook:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 10m
+      memory: 32Mi
+
+# CA Injector configuration
+cainjector:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Enable Prometheus metrics
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: false  # Enable when Prometheus operator is installed

@@ -1,0 +1,29 @@
+# cert-manager configuration for local development
+# Inherits from: platform-services/cert-manager/values.yaml
+
+# Minimal resources for local dev
+resources:
+  limits:
+    cpu: 50m
+    memory: 64Mi
+  requests:
+    cpu: 10m
+    memory: 32Mi
+
+webhook:
+  resources:
+    limits:
+      cpu: 25m
+      memory: 32Mi
+    requests:
+      cpu: 5m
+      memory: 16Mi
+
+cainjector:
+  resources:
+    limits:
+      cpu: 50m
+      memory: 64Mi
+    requests:
+      cpu: 10m
+      memory: 32Mi

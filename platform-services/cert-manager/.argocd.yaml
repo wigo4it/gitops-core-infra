@@ -1,0 +1,32 @@
+# ArgoCD metadata for cert-manager
+# This file is discovered by the ApplicationSet to deploy cert-manager across clusters
+
+chartName: cert-manager
+chartRepoURL: https://charts.jetstack.io
+targetNamespace: cert-manager
+
+# Version control per cluster
+clusters:
+  # Local Development
+  local-dev:
+    enabled: true
+    chartVersion: "v1.14.2"  # Latest stable version
+  
+  # IKV Clusters
+  aks-ikv-nonprod-vnext:
+    enabled: true
+    chartVersion: "v1.14.2"
+  aks-ikv-nonprod:
+    enabled: true
+    chartVersion: "v1.14.2"
+  aks-ikv-prod:
+    enabled: true
+    chartVersion: "v1.14.2"
+  
+  # Commonground Clusters
+  aks-commonground-nonprod:
+    enabled: true
+    chartVersion: "v1.14.2"
+  aks-commonground-prod:
+    enabled: true
+    chartVersion: "v1.14.2"

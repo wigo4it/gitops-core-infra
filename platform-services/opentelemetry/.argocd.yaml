@@ -7,9 +7,9 @@ targetNamespace: opentelemetry-system
 
 # Version control per cluster
 clusters:
-  # Local Development - disabled (requires cert-manager)
+  # Local Development
   local-dev:
-    enabled: false
+    enabled: true
     chartVersion: "0.40.0"  # Latest for local testing
   
   # IKV Clusters - OpenTelemetry not deployed on IKV

@@ -1,5 +1,5 @@
 # Environment-specific overrides for OpenTelemetry in Commonground nonprod
-# Inherits from: operators/opentelemetry/values.yaml
+# Inherits from: platform-services/opentelemetry/values.yaml
 
 additionalLabels:
   managed-by: argocd

@@ -20,12 +20,12 @@ spec:
         generator:
           matrix:
             generators:
-              # Discover operators via .argocd.yaml files
-              - git:
-                  repoURL: https://github.com/wigo4it/gitops-core-infra.git
-                  revision: HEAD
-                  files:
-                    - path: "operators/**/.argocd.yaml"
+# Discover platform services via .argocd.yaml files
+          - git:
+              repoURL: https://github.com/wigo4it/gitops-core-infra.git
+              revision: HEAD
+              files:
+                - path: "platform-services/**/.argocd.yaml"
               
               # Only generate for registered clusters
               - clusters:
@@ -63,8 +63,8 @@ spec:
           helm:
             releaseName: '{{.path.basename}}'
             valueFiles:
-              - $values/operators/{{.path.basename}}/values.yaml
-              - $values/operators/{{.path.basename}}/values.{{.name}}.yaml
+              - $values/platform-services/{{.path.basename}}/values.yaml
+              - $values/platform-services/{{.path.basename}}/values.{{.name}}.yaml
         
         # Source 2: Values repository reference
         - repoURL: https://github.com/wigo4it/gitops-core-infra.git

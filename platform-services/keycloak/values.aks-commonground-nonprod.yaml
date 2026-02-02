@@ -1,5 +1,5 @@
 # Environment-specific overrides for Keycloak in Commonground nonprod
-# Inherits from: operators/keycloak/values.yaml
+# Inherits from: platform-services/keycloak/values.yaml
 
 additionalLabels:
   managed-by: argocd
