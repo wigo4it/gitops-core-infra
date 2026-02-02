@@ -30,8 +30,8 @@ spec:
       labels:
         operator: '{{.path.basename}}'
         cluster: '{{.name}}'
-        environment: '{{default .metadata.labels.environment "unknown"}}'
-        cluster-group: '{{default .metadata.labels.cluster-group "unknown"}}'
+        environment: '{{if index .metadata.labels "environment"}}{{index .metadata.labels "environment"}}{{else}}unknown{{end}}'
+        cluster-group: '{{if index .metadata.labels "cluster-group"}}{{index .metadata.labels "cluster-group"}}{{else}}unknown{{end}}'
         argocd.argoproj.io/application-set: platform-operators
       annotations:
         argocd.argoproj.io/manifest-generate-paths: '.'
