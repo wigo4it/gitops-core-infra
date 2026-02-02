@@ -3,7 +3,7 @@
 # Using CloudPirates Helm chart: https://github.com/CloudPirates-io/helm-charts
 
 chartName: rabbitmq-cluster-operator
-chartRepoURL: oci://registry-1.docker.io/cloudpirates
+chartRepoURL: oci://ghcr.io/cloudpirates-io/helm-charts
 targetNamespace: rabbitmq-system
 
 # Version control per cluster
@@ -16,13 +16,13 @@ clusters:
   # IKV Clusters
   aks-ikv-nonprod-vnext:
     enabled: true
-    chartVersion: "0.1.5"  # Latest version for testing
+    chartVersion: "0.1.5"
   aks-ikv-nonprod:
     enabled: true
-    chartVersion: "0.1.5"  # Latest stable version
+    chartVersion: "0.1.5"
   aks-ikv-prod:
     enabled: true
-    chartVersion: "0.1.5"  # Latest stable version
+    chartVersion: "0.1.5"
   
   # Commonground Clusters - TODO: Update cluster names when provided
   aks-commonground-nonprod:
