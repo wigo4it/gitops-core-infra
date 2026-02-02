@@ -295,8 +295,8 @@ kubectl get pods -n keda-system -w
 │       └── prod/
 │           └── root.yaml
 │
-└── helm-charts/
-    └── repositories.yaml           # Helm repository definitions
+└── .archive/
+    └── legacy/                     # Archived old structure
 ```
 
 ### Key Files Explained
