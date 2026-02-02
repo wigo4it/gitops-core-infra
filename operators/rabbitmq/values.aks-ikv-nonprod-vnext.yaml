@@ -1,0 +1,21 @@
+# Environment-specific overrides for RabbitMQ Operator in IKV nonprod-vnext
+# Inherits from: helm-values/base/rabbitmq-operator.yaml
+
+# Additional labels
+commonLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
+  cluster: ikv
+  environment: nonprod-vnext
+
+# Logging - more verbose
+logLevel: debug
+
+# Resources - lower for nonprod
+resources:
+  limits:
+    cpu: 300m
+    memory: 384Mi
+  requests:
+    cpu: 100m
+    memory: 192Mi

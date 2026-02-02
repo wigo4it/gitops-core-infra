@@ -1,0 +1,26 @@
+# KEDA Operator - Local Development Cluster
+# Minimal resource allocation for local testing (kind/minikube/k3d)
+
+# Single replica for dev
+replicaCount: 1
+
+# Reduced resources for local
+resources:
+  operator:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  metricServer:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+# Disable HA for local
+podDisruptionBudget:
+  enabled: false

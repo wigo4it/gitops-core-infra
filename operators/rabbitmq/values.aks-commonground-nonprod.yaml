@@ -1,0 +1,19 @@
+# Environment-specific overrides for RabbitMQ in Commonground nonprod
+# Inherits from: operators/rabbitmq/values.yaml
+
+additionalLabels:
+  managed-by: argocd
+  cluster: commonground
+  environment: nonprod
+
+resources:
+  limits:
+    cpu: 750m
+    memory: 768Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+clusterOperator:
+  logLevel: info
+  watchNamespace: ""

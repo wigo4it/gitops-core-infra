@@ -1,0 +1,40 @@
+# Environment-specific overrides for RabbitMQ Operator in IKV production
+# Inherits from: helm-values/base/rabbitmq-operator.yaml
+
+# Increase replicas for HA
+replicaCount: 2
+
+# Additional labels
+commonLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
+  cluster: ikv
+  environment: prod
+
+# Logging - standard for production
+logLevel: info
+
+# Resources - higher for production
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Affinity for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: rabbitmq-cluster-operator
+          topologyKey: kubernetes.io/hostname

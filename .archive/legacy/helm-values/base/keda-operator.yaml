@@ -1,0 +1,74 @@
+# Base Helm values for KEDA Operator
+# Chart: kedacore/keda
+# Documentation: https://github.com/kedacore/charts/tree/main/keda
+
+# Basic configuration
+replicaCount: 1
+
+image:
+  keda:
+    repository: ghcr.io/kedacore/keda
+    tag: ""  # Use chart default
+  metricsApiServer:
+    repository: ghcr.io/kedacore/keda-metrics-apiserver
+    tag: ""  # Use chart default
+
+# Resource limits - conservative defaults
+resources:
+  operator:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  metricServer:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Pod security
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# Service account
+serviceAccount:
+  create: true
+  name: keda-operator
+
+# Webhook configuration
+webhooks:
+  enabled: true
+  port: 9443
+
+# Prometheus metrics
+prometheus:
+  metricServer:
+    enabled: true
+    port: 8080
+  operator:
+    enabled: true
+    port: 8080
+
+# Log level
+logging:
+  operator:
+    level: info
+  metricServer:
+    level: "0"
+
+# Additional labels
+additionalLabels:
+  managed-by: argocd

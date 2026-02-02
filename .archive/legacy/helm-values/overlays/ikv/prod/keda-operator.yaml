@@ -1,0 +1,46 @@
+# Environment-specific overrides for KEDA in IKV production
+# Inherits from: helm-values/base/keda-operator.yaml
+
+# Increase replicas for HA
+replicaCount: 2
+
+# Additional labels for this environment
+additionalLabels:
+  managed-by: argocd
+  cluster: ikv
+  environment: prod
+
+# Logging - less verbose for production
+logging:
+  operator:
+    level: info
+  metricServer:
+    level: "0"
+
+# Resource limits - higher for production
+resources:
+  operator:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  metricServer:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+# Pod anti-affinity for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: keda-operator
+          topologyKey: kubernetes.io/hostname

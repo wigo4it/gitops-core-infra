@@ -1,0 +1,40 @@
+# Environment-specific overrides for Redir Operator in IKV production
+# Inherits from: helm-values/base/redir-operator.yaml
+
+# Increase replicas for HA
+replicaCount: 2
+
+# Labels for this environment
+labels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
+  cluster: ikv
+  environment: prod
+
+# Operator config
+operator:
+  watchNamespace: ""
+  logLevel: info
+  metrics:
+    enabled: true
+    port: 8080
+
+# Resources - higher for production
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Affinity for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: redir-operator
+          topologyKey: kubernetes.io/hostname

@@ -1,0 +1,29 @@
+# ArgoCD metadata for OpenTelemetry Operator
+# This file is discovered by the ApplicationSet to deploy OpenTelemetry across clusters
+
+chartName: opentelemetry-operator
+chartRepoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
+targetNamespace: opentelemetry-system
+
+# Version control per cluster
+clusters:
+  # Local Development
+  local-dev:
+    enabled: true
+    chartVersion: "0.40.0"  # Latest for local testing
+  
+  # IKV Clusters - OpenTelemetry not deployed on IKV
+  aks-ikv-nonprod-vnext:
+    enabled: false
+  aks-ikv-nonprod:
+    enabled: false
+  aks-ikv-prod:
+    enabled: false
+  
+  # Commonground Clusters - TODO: Update cluster names when provided
+  aks-commonground-nonprod:
+    enabled: true
+    chartVersion: "0.47.0"  # Latest version
+  aks-commonground-prod:
+    enabled: true
+    chartVersion: "0.46.0"  # Conservative stable version

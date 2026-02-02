@@ -1,0 +1,33 @@
+# ArgoCD metadata for KEDA Operator
+# This file is discovered by the ApplicationSet to deploy KEDA across clusters
+
+chartName: keda
+chartRepoURL: https://kedacore.github.io/charts
+targetNamespace: keda-system
+
+# Version control per cluster - allows independent version management
+# Promotion flow: local-dev (dev) → nonprod-vnext (test) → nonprod (validate) → prod (stable)
+clusters:
+  # Local Development
+  local-dev:
+    enabled: true
+    chartVersion: "2.14.0"  # Latest for local testing
+  
+  # IKV Clusters
+  aks-ikv-nonprod-vnext:
+    enabled: true
+    chartVersion: "2.14.0"  # Latest version for testing
+  aks-ikv-nonprod:
+    enabled: true
+    chartVersion: "2.14.0"  # Validated version
+  aks-ikv-prod:
+    enabled: true
+    chartVersion: "2.13.0"  # Conservative stable version
+  
+  # Commonground Clusters - TODO: Update cluster names when provided
+  aks-commonground-nonprod:
+    enabled: true
+    chartVersion: "2.14.0"
+  aks-commonground-prod:
+    enabled: true
+    chartVersion: "2.13.0"

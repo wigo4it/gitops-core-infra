@@ -1,0 +1,45 @@
+# Environment-specific overrides for KEDA in Commonground prod
+# Inherits from: operators/keda/values.yaml
+
+additionalLabels:
+  managed-by: argocd
+  cluster: commonground
+  environment: prod
+
+# Production logging
+logging:
+  operator:
+    level: warn
+  metricServer:
+    level: "0"
+
+# High availability for production
+replicaCount: 2
+
+# Production resources
+resources:
+  operator:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  metricServer:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+
+# Anti-affinity for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: keda-operator
+          topologyKey: kubernetes.io/hostname

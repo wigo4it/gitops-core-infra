@@ -1,0 +1,107 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: commonground-operators
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # Matrix generator to combine cluster environments with components
+    - matrix:
+        generators:
+          # List generator for Commonground cluster environments
+          - list:
+              elements:
+                - cluster: commonground
+                  environment: nonprod
+                  clusterName: aks-commonground-nonprod  # TODO: Update with actual cluster name
+                  components:
+                    - name: redir-operator
+                      chart: ""  # Custom chart or raw manifests
+                      repo: https://github.com/your-org/ikvcluster-core-infra2.git
+                      version: ""
+                    - name: rabbitmq-operator
+                      chart: rabbitmq-cluster-operator
+                      repo: https://charts.bitnami.com/bitnami
+                      version: "4.3.0"
+                    - name: keda-operator
+                      chart: keda
+                      repo: https://kedacore.github.io/charts
+                      version: "2.14.0"
+                    - name: opentelemetry-operator
+                      chart: opentelemetry-operator
+                      repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+                      version: "0.47.0"
+                    - name: keycloak-operator
+                      chart: keycloakx
+                      repo: https://codecentric.github.io/helm-charts
+                      version: "2.3.0"
+                - cluster: commonground
+                  environment: prod
+                  clusterName: aks-commonground-prod  # TODO: Update with actual cluster name
+                  components:
+                    - name: redir-operator
+                      chart: ""
+                      repo: https://github.com/your-org/ikvcluster-core-infra2.git
+                      version: ""
+                    - name: rabbitmq-operator
+                      chart: rabbitmq-cluster-operator
+                      repo: https://charts.bitnami.com/bitnami
+                      version: "4.3.0"
+                    - name: keda-operator
+                      chart: keda
+                      repo: https://kedacore.github.io/charts
+                      version: "2.14.0"
+                    - name: opentelemetry-operator
+                      chart: opentelemetry-operator
+                      repo: https://open-telemetry.github.io/opentelemetry-helm-charts
+                      version: "0.47.0"
+                    - name: keycloak-operator
+                      chart: keycloakx
+                      repo: https://codecentric.github.io/helm-charts
+                      version: "2.3.0"
+          # List generator for each component in the cluster's components list
+          - list:
+              elementsYaml: '{{ toJson .components }}'
+  template:
+    metadata:
+      name: '{{.name}}-{{.clusterName}}'
+      labels:
+        cluster: '{{.cluster}}'
+        environment: '{{.environment}}'
+        component: '{{.name}}'
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: '.'
+    spec:
+      project: default
+      sources:
+        # Base Helm values
+        - repoURL: https://github.com/your-org/ikvcluster-core-infra2.git  # UPDATE THIS
+          targetRevision: HEAD
+          ref: values-repo
+        # Helm chart source
+        - repoURL: '{{.repo}}'
+          targetRevision: '{{.version}}'
+          chart: '{{.chart}}'
+          helm:
+            releaseName: '{{.name}}'
+            valueFiles:
+              - $values-repo/helm-values/base/{{.name}}.yaml
+              - $values-repo/helm-values/overlays/{{.cluster}}/{{.environment}}/{{.name}}.yaml
+      destination:
+        name: '{{.clusterName}}'  # Cluster name registered in ArgoCD
+        namespace: '{{.name}}-system'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

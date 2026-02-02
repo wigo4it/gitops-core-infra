@@ -1,0 +1,33 @@
+# Environment-specific overrides for OpenTelemetry Operator in Commonground production
+# Inherits from: helm-values/base/opentelemetry-operator.yaml
+
+# Increase replicas for HA
+replicaCount: 2
+
+# Additional labels
+additionalLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
+  cluster: commonground
+  environment: prod
+
+# Resource limits - higher for production
+manager:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+# Affinity for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: opentelemetry-operator
+          topologyKey: kubernetes.io/hostname

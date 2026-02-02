@@ -1,0 +1,27 @@
+# Helm Chart Repositories
+# Add these repositories to your Helm/ArgoCD configuration
+
+repositories:
+  - name: kedacore
+    url: https://kedacore.github.io/charts
+    description: KEDA - Kubernetes Event Driven Autoscaling
+
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+    description: Bitnami Helm Charts (RabbitMQ Operator)
+
+  - name: open-telemetry
+    url: https://open-telemetry.github.io/opentelemetry-helm-charts
+    description: OpenTelemetry Operator
+
+  - name: codecentric
+    url: https://codecentric.github.io/helm-charts
+    description: Keycloak and related charts
+
+  - name: jetstack
+    url: https://charts.jetstack.io
+    description: Cert-Manager (if needed)
+
+# To add repositories to ArgoCD:
+# kubectl apply -f this-file.yaml (after converting to proper ArgoCD format)
+# Or use ArgoCD UI: Settings > Repositories

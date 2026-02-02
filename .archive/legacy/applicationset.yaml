@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cluster-operators
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # Matrix generator combines cluster environments with component directories
+    - matrix:
+        generators:
+          # First: Discover component directories
+          - git:
+              repoURL: https://github.com/your-org/ikvcluster-core-infra2.git  # UPDATE THIS
+              revision: HEAD
+              directories:
+                - path: components/overlays/*/*
+          # Second: Match with cluster configurations
+          - git:
+              repoURL: https://github.com/your-org/ikvcluster-core-infra2.git  # UPDATE THIS
+              revision: HEAD
+              files:
+                - path: "clusters/*/*.yaml"
+  template:
+    metadata:
+      name: '{{.path.basenameNormalized}}-{{.cluster.name}}-{{.environment}}'
+      labels:
+        cluster: '{{.cluster.group}}'
+        environment: '{{.environment}}'
+        component: '{{.path.basenameNormalized}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/your-org/ikvcluster-core-infra2.git  # UPDATE THIS
+        targetRevision: HEAD
+        path: '{{.path.path}}'
+      destination:
+        # This uses the cluster name to target the correct cluster
+        # Make sure your ArgoCD cluster secrets are labeled correctly
+        name: '{{.cluster.name}}'
+        namespace: '{{.path.basenameNormalized}}-system'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas

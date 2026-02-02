@@ -1,0 +1,124 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-operators
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: '.'
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # Matrix generator combining operator discovery with cluster list
+    - matrix:
+        generators:
+          # Discover operators via .argocd.yaml files
+          - git:
+              repoURL: https://github.com/wigo4it/gitops-core-infra.git
+              revision: HEAD
+              files:
+                - path: "operators/**/.argocd.yaml"
+          
+          # List all clusters
+          - list:
+              elements:
+                # IKV Clusters
+                - clusterName: aks-ikv-nonprod-vnext
+                  environment: nonprod-vnext
+                  clusterGroup: ikv
+                - clusterName: aks-ikv-nonprod
+                  environment: nonprod
+                  clusterGroup: ikv
+                - clusterName: aks-ikv-prod
+                  environment: prod
+                  clusterGroup: ikv
+                
+                # Commonground Clusters - TODO: Update cluster names when provided
+                - clusterName: aks-commonground-nonprod
+                  environment: nonprod
+                  clusterGroup: commonground
+                - clusterName: aks-commonground-prod
+                  environment: prod
+                  clusterGroup: commonground
+  
+  template:
+    metadata:
+      name: '{{.path.basename}}-{{.clusterName}}'
+      labels:
+        operator: '{{.path.basename}}'
+        cluster: '{{.clusterName}}'
+        environment: '{{.environment}}'
+        cluster-group: '{{.clusterGroup}}'
+        argocd.argoproj.io/application-set: platform-operators
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: '.'
+        operator-version: '{{index (index .clusters .clusterName) "chartVersion"}}'
+    
+    spec:
+      project: default
+      
+      # Multi-source configuration
+      sources:
+        # Helm chart source (if chartName is defined)
+        {{- if .chartName }}
+        - repoURL: '{{.chartRepoURL}}'
+          chart: '{{.chartName}}'
+          targetRevision: '{{index (index .clusters .clusterName) "chartVersion"}}'
+          helm:
+            releaseName: '{{.path.basename}}'
+            valueFiles:
+              - $values/operators/{{.path.basename}}/values.yaml
+              - $values/operators/{{.path.basename}}/values.{{.clusterName}}.yaml
+        {{- else }}
+        # Git source for raw manifests (e.g., redir operator)
+        - repoURL: '{{.repoURL}}'
+          targetRevision: '{{index (index .clusters .clusterName) "targetRevision"}}'
+          path: '{{.path}}'
+          helm:
+            valueFiles:
+              - $values/operators/{{.path.basename}}/values.yaml
+              - $values/operators/{{.path.basename}}/values.{{.clusterName}}.yaml
+        {{- end }}
+        
+        # Values repository
+        - repoURL: https://github.com/wigo4it/gitops-core-infra.git
+          targetRevision: HEAD
+          ref: values
+      
+      destination:
+        name: '{{.clusterName}}'
+        namespace: '{{.targetNamespace}}'
+      
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+          - ApplyOutOfSyncOnly=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      
+      # Ignore differences in status fields
+      ignoreDifferences:
+        - group: "*"
+          kind: "*"
+          jsonPointers:
+            - /status
+            - /metadata/resourceVersion
+            - /metadata/generation
+            - /metadata/managedFields
+    
+    # Only create application if enabled for this cluster
+    syncPolicy:
+      preserveResourcesOnDeletion: false
+    
+  # Sync wave for ordering
+  syncPolicy:
+    applicationsSync: create-update

@@ -1,0 +1,38 @@
+# Environment-specific overrides for KEDA in IKV nonprod
+# Inherits from: operators/keda/values.yaml
+
+# Additional labels for this environment
+additionalLabels:
+  managed-by: argocd
+  cluster: ikv
+  environment: nonprod
+
+# Logging - balanced for nonprod
+logging:
+  operator:
+    level: info
+  metricServer:
+    level: "1"
+
+# Resource limits - moderate for nonprod
+resources:
+  operator:
+    limits:
+      cpu: 750m
+      memory: 768Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  metricServer:
+    limits:
+      cpu: 750m
+      memory: 768Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+# Service account
+serviceAccount:
+  create: true
+  annotations:
+    azure.workload.identity/client-id: ""  # Add Azure Workload Identity if needed

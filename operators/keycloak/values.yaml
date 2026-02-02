@@ -1,0 +1,74 @@
+# Base Helm values for Keycloak Operator
+# Chart: codecentric/keycloak or use keycloakx
+# Documentation: https://github.com/codecentric/helm-charts/tree/master/charts/keycloakx
+
+# Note: This is for Keycloak itself. For the operator, you might use OLM or custom deployment
+# Adjust based on your actual Keycloak operator choice
+
+# Replicas
+replicas: 1
+
+# Image configuration
+image:
+  repository: quay.io/keycloak/keycloak
+  tag: ""  # Use chart default
+  pullPolicy: IfNotPresent
+
+# Command and args for operator mode
+command:
+  - java
+args:
+  - -Dkeycloak.profile.feature.upload_scripts=enabled
+  - -jar
+  - /opt/keycloak/lib/quarkus-run.jar
+  - start
+  - --optimized
+
+# Resources
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Service Account
+serviceAccount:
+  create: true
+  name: keycloak-operator
+
+# Security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+
+# Health checks
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /health/live
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 10
+
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /health/ready
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+# Additional labels
+extraLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator

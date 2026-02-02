@@ -1,0 +1,32 @@
+# ArgoCD metadata for RabbitMQ Cluster Operator
+# This file is discovered by the ApplicationSet to deploy RabbitMQ across clusters
+
+chartName: rabbitmq-cluster-operator
+chartRepoURL: https://charts.bitnami.com/bitnami
+targetNamespace: rabbitmq-system
+
+# Version control per cluster
+clusters:
+  # Local Development
+  local-dev:
+    enabled: true
+    chartVersion: "4.3.0"  # Latest for local testing
+  
+  # IKV Clusters
+  aks-ikv-nonprod-vnext:
+    enabled: true
+    chartVersion: "4.3.0"  # Latest version for testing
+  aks-ikv-nonprod:
+    enabled: true
+    chartVersion: "4.3.0"  # Validated version
+  aks-ikv-prod:
+    enabled: true
+    chartVersion: "4.2.5"  # Conservative stable version
+  
+  # Commonground Clusters - TODO: Update cluster names when provided
+  aks-commonground-nonprod:
+    enabled: true
+    chartVersion: "4.3.0"
+  aks-commonground-prod:
+    enabled: true
+    chartVersion: "4.2.5"

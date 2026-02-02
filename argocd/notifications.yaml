@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  # Define notification services
+  service.slack: |
+    token: $slack-token
+  
+  # Templates
+  template.app-deployed: |
+    message: |
+      Application {{.app.metadata.name}} is now running new version.
+      Sync Status: {{.app.status.sync.status}}
+      Health Status: {{.app.status.health.status}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{.app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [{
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          }, {
+            "title": "Health Status", 
+            "value": "{{.app.status.health.status}}",
+            "short": true
+          }, {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }]
+        }]
+  
+  template.app-health-degraded: |
+    message: |
+      Application {{.app.metadata.name}} has degraded health status.
+      Health Status: {{.app.status.health.status}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{.app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#f4c030",
+          "fields": [{
+            "title": "Health Status",
+            "value": "{{.app.status.health.status}}",
+            "short": true
+          }]
+        }]
+  
+  template.app-sync-failed: |
+    message: |
+      Application {{.app.metadata.name}} sync has failed.
+      Sync Status: {{.app.status.sync.status}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{.app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#E96D76",
+          "fields": [{
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          }]
+        }]
+
+  # Triggers
+  trigger.on-deployed: |
+    - when: app.status.operationState.phase in ['Succeeded']
+      send: [app-deployed]
+  
+  trigger.on-health-degraded: |
+    - when: app.status.health.status == 'Degraded'
+      send: [app-health-degraded]
+  
+  trigger.on-sync-failed: |
+    - when: app.status.operationState.phase in ['Error', 'Failed']
+      send: [app-sync-failed]
+
+  # Subscriptions (which apps trigger which notifications)
+  subscriptions: |
+    - recipients:
+      - slack:argocd-notifications
+      triggers:
+      - on-deployed
+      - on-health-degraded
+      - on-sync-failed
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-notifications-secret
+  namespace: argocd
+type: Opaque
+stringData:
+  slack-token: "xoxb-YOUR-SLACK-TOKEN"  # Replace with actual token

@@ -1,0 +1,29 @@
+# Environment-specific overrides for KEDA in Commonground nonprod
+# Inherits from: operators/keda/values.yaml
+
+additionalLabels:
+  managed-by: argocd
+  cluster: commonground
+  environment: nonprod
+
+logging:
+  operator:
+    level: info
+  metricServer:
+    level: "1"
+
+resources:
+  operator:
+    limits:
+      cpu: 750m
+      memory: 768Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  metricServer:
+    limits:
+      cpu: 750m
+      memory: 768Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi

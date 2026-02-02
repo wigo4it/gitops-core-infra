@@ -1,0 +1,63 @@
+# Base Helm values for Redir Operator
+# Note: If no official Helm chart exists, this will be used with a custom chart
+# or you can deploy using raw manifests via ArgoCD
+
+# If you create a custom Helm chart for redir-operator, use these values:
+
+replicaCount: 1
+
+image:
+  repository: your-registry/redir-operator
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: redir-operator
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Operator-specific configuration
+operator:
+  watchNamespace: ""  # Empty watches all namespaces
+  logLevel: info
+  metrics:
+    enabled: true
+    port: 8080
+
+# Additional labels
+labels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator

@@ -1,0 +1,32 @@
+# Environment-specific overrides for KEDA in IKV nonprod-vnext
+# Inherits from: helm-values/base/keda-operator.yaml
+
+# Additional labels for this environment
+additionalLabels:
+  managed-by: argocd
+  cluster: ikv
+  environment: nonprod-vnext
+
+# Logging - more verbose for nonprod
+logging:
+  operator:
+    level: debug
+  metricServer:
+    level: "2"
+
+# Resource limits - lower for nonprod
+resources:
+  operator:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 50m
+      memory: 96Mi
+  metricServer:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 50m
+      memory: 96Mi

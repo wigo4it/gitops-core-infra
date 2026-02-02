@@ -1,0 +1,19 @@
+# Environment-specific overrides for OpenTelemetry in Commonground nonprod
+# Inherits from: operators/opentelemetry/values.yaml
+
+additionalLabels:
+  managed-by: argocd
+  cluster: commonground
+  environment: nonprod
+
+manager:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  env:
+    ENABLE_WEBHOOKS: "true"

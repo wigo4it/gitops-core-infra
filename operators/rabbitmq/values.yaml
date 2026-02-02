@@ -1,0 +1,63 @@
+# Base Helm values for RabbitMQ Cluster Operator
+# Chart: bitnami/rabbitmq-cluster-operator
+# Documentation: https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq-cluster-operator
+
+# Replica count
+replicaCount: 1
+
+image:
+  registry: docker.io
+  repository: bitnami/rabbitmq-cluster-operator
+  tag: ""  # Use chart default
+  pullPolicy: IfNotPresent
+
+# Resource limits
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+# Service Account
+serviceAccount:
+  create: true
+  name: rabbitmq-operator
+
+# RBAC
+rbac:
+  create: true
+
+# Watch all namespaces
+watchNamespaces: []  # Empty = watch all namespaces
+
+# Pod Security Context
+podSecurityContext:
+  enabled: true
+  runAsNonRoot: true
+  runAsUser: 1001
+  fsGroup: 1001
+
+# Container Security Context
+containerSecurityContext:
+  enabled: true
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# Logging
+logLevel: info
+
+# Metrics
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false  # Enable if Prometheus Operator is available
+
+# Additional labels
+commonLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator

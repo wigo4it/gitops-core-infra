@@ -1,0 +1,47 @@
+# .gitignore for ArgoCD GitOps Repository
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Secrets (should never be committed)
+*.key
+*.pem
+secrets/
+.env
+.env.*
+
+# Kustomize build output
+kustomized/
+build/
+
+# Helm
+*.tgz
+charts/*/charts/
+
+# ArgoCD local testing
+.argocd-test/
+
+# Terraform (if used for infrastructure)
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Compiled files
+*.pyc
+__pycache__/

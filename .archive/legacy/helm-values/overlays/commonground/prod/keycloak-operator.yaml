@@ -1,0 +1,32 @@
+# Environment-specific overrides for Keycloak Operator in Commonground production
+# Inherits from: helm-values/base/keycloak-operator.yaml
+
+# Increase replicas for HA
+replicas: 2
+
+# Additional labels
+extraLabels:
+  managed-by: argocd
+  app.kubernetes.io/component: operator
+  cluster: commonground
+  environment: prod
+
+# Resources - higher for production
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+# Affinity for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: keycloak-operator
+          topologyKey: kubernetes.io/hostname

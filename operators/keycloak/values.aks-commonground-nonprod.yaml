@@ -1,0 +1,24 @@
+# Environment-specific overrides for Keycloak in Commonground nonprod
+# Inherits from: operators/keycloak/values.yaml
+
+additionalLabels:
+  managed-by: argocd
+  cluster: commonground
+  environment: nonprod
+
+# Keycloak configuration for nonprod
+keycloak:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+# Database for nonprod
+database:
+  vendor: postgres
+  hostname: ""  # Set via environment-specific secret
+  database: keycloak
+  username: keycloak

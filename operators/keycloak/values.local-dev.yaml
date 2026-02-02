@@ -1,0 +1,34 @@
+# Keycloak Operator - Local Development Cluster
+# Minimal resource allocation for local testing (kind/minikube/k3d)
+
+# Single replica for dev (no HA)
+replicas: 1
+
+# Reduced resources for local
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Development mode (faster startup, not for production)
+extraEnv: |
+  - name: KC_CACHE
+    value: "local"
+  - name: KEYCLOAK_PRODUCTION
+    value: "false"
+
+# Disable ingress for local
+ingress:
+  enabled: false
+
+# Use ephemeral database for testing
+postgresql:
+  enabled: false
+
+# Development database
+extraEnvFrom: |
+  - configMapRef:
+      name: keycloak-dev-config

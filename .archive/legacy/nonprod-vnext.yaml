@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aks-ikv-nonprod-vnext-config
+  namespace: argocd
+  labels:
+    cluster: ikv
+    environment: nonprod-vnext
+    argocd.argoproj.io/secret-type: cluster
+data:
+  cluster.name: "aks-ikv-nonprod-vnext"
+  cluster.group: "ikv"
+  environment: "nonprod-vnext"
+  # Define which components to deploy on this cluster
+  components: |
+    - redir-operator
+    - rabbitmq-operator
+    - keda-operator
