@@ -59,8 +59,7 @@ spec:
       
       # Multi-source configuration
       sources:
-        # Helm chart source (if chartName is defined)
-        {{- if .chartName }}
+        # Helm chart source
         - repoURL: '{{.chartRepoURL}}'
           chart: '{{.chartName}}'
           targetRevision: '{{index (index .clusters .clusterName) "chartVersion"}}'
@@ -69,16 +68,6 @@ spec:
             valueFiles:
               - $values/operators/{{.path.basename}}/values.yaml
               - $values/operators/{{.path.basename}}/values.{{.clusterName}}.yaml
-        {{- else }}
-        # Git source for raw manifests (e.g., redir operator)
-        - repoURL: '{{.repoURL}}'
-          targetRevision: '{{index (index .clusters .clusterName) "targetRevision"}}'
-          path: '{{.path}}'
-          helm:
-            valueFiles:
-              - $values/operators/{{.path.basename}}/values.yaml
-              - $values/operators/{{.path.basename}}/values.{{.clusterName}}.yaml
-        {{- end }}
         
         # Values repository
         - repoURL: https://github.com/wigo4it/gitops-core-infra.git
