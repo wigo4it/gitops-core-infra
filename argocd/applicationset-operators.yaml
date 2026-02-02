@@ -19,45 +19,23 @@ spec:
               files:
                 - path: "operators/**/.argocd.yaml"
           
-          # List all clusters
-          - list:
-              elements:
-                # Local Development
-                - clusterName: local-dev
-                  environment: local
-                  clusterGroup: local
-                
-                # IKV Clusters
-                - clusterName: aks-ikv-nonprod-vnext
-                  environment: nonprod-vnext
-                  clusterGroup: ikv
-                - clusterName: aks-ikv-nonprod
-                  environment: nonprod
-                  clusterGroup: ikv
-                - clusterName: aks-ikv-prod
-                  environment: prod
-                  clusterGroup: ikv
-                
-                # Commonground Clusters - TODO: Update cluster names when provided
-                - clusterName: aks-commonground-nonprod
-                  environment: nonprod
-                  clusterGroup: commonground
-                - clusterName: aks-commonground-prod
-                  environment: prod
-                  clusterGroup: commonground
+          # Only generate for registered clusters
+          - clusters:
+              selector:
+                matchLabels: {}  # Match all registered clusters
   
   template:
     metadata:
-      name: '{{.path.basename}}-{{.clusterName}}'
+      name: '{{.path.basename}}-{{.name}}'
       labels:
         operator: '{{.path.basename}}'
-        cluster: '{{.clusterName}}'
-        environment: '{{.environment}}'
-        cluster-group: '{{.clusterGroup}}'
+        cluster: '{{.name}}'
+        environment: '{{default .metadata.labels.environment "unknown"}}'
+        cluster-group: '{{default .metadata.labels.cluster-group "unknown"}}'
         argocd.argoproj.io/application-set: platform-operators
       annotations:
         argocd.argoproj.io/manifest-generate-paths: '.'
-        operator-version: '{{index (index .clusters .clusterName) "chartVersion"}}'
+        operator-version: '{{index (index .clusters .name) "chartVersion"}}'
     
     spec:
       project: default
@@ -67,12 +45,12 @@ spec:
         # Helm chart source
         - repoURL: '{{.chartRepoURL}}'
           chart: '{{.chartName}}'
-          targetRevision: '{{index (index .clusters .clusterName) "chartVersion"}}'
+          targetRevision: '{{index (index .clusters .name) "chartVersion"}}'
           helm:
             releaseName: '{{.path.basename}}'
             valueFiles:
               - $values/operators/{{.path.basename}}/values.yaml
-              - $values/operators/{{.path.basename}}/values.{{.clusterName}}.yaml
+              - $values/operators/{{.path.basename}}/values.{{.name}}.yaml
         
         # Values repository
         - repoURL: https://github.com/wigo4it/gitops-core-infra.git
@@ -80,7 +58,7 @@ spec:
           ref: values
       
       destination:
-        name: '{{.clusterName}}'
+        name: '{{.name}}'
         namespace: '{{.targetNamespace}}'
       
       syncPolicy:
