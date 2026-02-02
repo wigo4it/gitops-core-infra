@@ -14,13 +14,13 @@ clusters:
   local-dev:
     enabled: true
   
-  # IKV Clusters - Keycloak not deployed on IKV
+  # IKV Clusters
   aks-ikv-nonprod-vnext:
-    enabled: false
+    enabled: true
   aks-ikv-nonprod:
-    enabled: false
+    enabled: true
   aks-ikv-prod:
-    enabled: false
+    enabled: true
   
   # Commonground Clusters
   aks-commonground-nonprod:
