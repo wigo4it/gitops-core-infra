@@ -97,7 +97,7 @@ Final Deployment
 | Operator | Chart | Repository |
 |----------|-------|------------|
 | KEDA | `kedacore/keda` | https://kedacore.github.io/charts |
-| RabbitMQ | `bitnami/rabbitmq-cluster-operator` | https://charts.bitnami.com/bitnami |
+| RabbitMQ | `cloudpirates/rabbitmq-operator` | https://cloudpirates.github.io/rabbitmq-operator/ |
 | OpenTelemetry | `open-telemetry/opentelemetry-operator` | https://open-telemetry.github.io/opentelemetry-helm-charts |
 | Keycloak | `codecentric/keycloakx` | https://codecentric.github.io/helm-charts |
 
