@@ -51,20 +51,23 @@ securityContext:
     - ALL
   readOnlyRootFilesystem: true
 
-# Health checks
-livenessProbe:
+# Health Checks
+# Note: keycloakx chart requires probes as string templates (using tpl function)
+livenessProbe: |
   httpGet:
     path: /health/live
-    port: 8080
-  initialDelaySeconds: 60
-  periodSeconds: 10
+    port: http-internal
+    scheme: HTTP
+  initialDelaySeconds: 0
+  timeoutSeconds: 5
 
-readinessProbe:
+readinessProbe: |
   httpGet:
     path: /health/ready
-    port: 8080
-  initialDelaySeconds: 30
-  periodSeconds: 10
+    port: http-internal
+    scheme: HTTP
+  initialDelaySeconds: 10
+  timeoutSeconds: 1
 
 # Additional labels
 extraLabels:
