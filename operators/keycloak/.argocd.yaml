@@ -1,16 +1,18 @@
 # ArgoCD metadata for Keycloak Operator
 # This file is discovered by the ApplicationSet to deploy Keycloak across clusters
+# Using official Keycloak operator: https://www.keycloak.org/operator/installation
 
-chartName: keycloakx
-chartRepoURL: https://codecentric.github.io/helm-charts
+# Use raw Kubernetes manifests instead of Helm
 targetNamespace: keycloak-system
 
-# Version control per cluster
+# Operator version (latest stable)
+operatorVersion: "26.5.2"
+
+# Cluster-specific enablement
 clusters:
   # Local Development
   local-dev:
     enabled: true
-    chartVersion: "2.3.0"  # Latest for local testing
   
   # IKV Clusters - Keycloak not deployed on IKV
   aks-ikv-nonprod-vnext:
@@ -20,10 +22,8 @@ clusters:
   aks-ikv-prod:
     enabled: false
   
-  # Commonground Clusters - TODO: Update cluster names when provided
+  # Commonground Clusters
   aks-commonground-nonprod:
     enabled: true
-    chartVersion: "2.3.0"  # Latest version
   aks-commonground-prod:
     enabled: true
-    chartVersion: "2.2.1"  # Conservative stable version

@@ -41,7 +41,10 @@ spec:
       project: default
       
       # Multi-source configuration
+      # Supports both Helm charts and raw Kubernetes manifests
       sources:
+        # Source 1: Helm chart (if chartName is defined) OR manifests directory
+        {{- if .chartName }}
         # Helm chart source
         - repoURL: '{{.chartRepoURL}}'
           chart: '{{.chartName}}'
@@ -51,8 +54,14 @@ spec:
             valueFiles:
               - $values/operators/{{.path.basename}}/values.yaml
               - $values/operators/{{.path.basename}}/values.{{.name}}.yaml
+        {{- else }}
+        # Raw Kubernetes manifests
+        - repoURL: https://github.com/wigo4it/gitops-core-infra.git
+          targetRevision: HEAD
+          path: operators/{{.path.basename}}/manifests
+        {{- end }}
         
-        # Values repository
+        # Source 2: Values/config repository reference
         - repoURL: https://github.com/wigo4it/gitops-core-infra.git
           targetRevision: HEAD
           ref: values

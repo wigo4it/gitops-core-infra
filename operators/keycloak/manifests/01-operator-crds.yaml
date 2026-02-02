@@ -1,0 +1,18 @@
+# Official Keycloak Operator CRDs
+# Reference: https://www.keycloak.org/operator/installation
+# Version: 26.5.2
+
+# Note: CRDs are installed from the official Keycloak repository
+# These will be fetched during ArgoCD sync
+# kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.5.2/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+# kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.5.2/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-operator-info
+  namespace: keycloak-system
+data:
+  version: "26.5.2"
+  crds-url: "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.5.2/kubernetes/"
+  operator-url: "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.5.2/kubernetes/kubernetes.yml"
