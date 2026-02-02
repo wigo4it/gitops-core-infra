@@ -49,7 +49,9 @@ rbac:
 # Admission webhooks
 admissionWebhooks:
   create: true
-  autoGenerateCert: true  # Boolean value, not an object
+  autoGenerateCert: false  # Disable cert-manager (not installed)
+  certManager:
+    enabled: false  # Don't use cert-manager
 
 # Feature gates
 manager:
