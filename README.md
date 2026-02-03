@@ -1,6 +1,6 @@
 # GitOps Infrastructure - Complete Guide
 
-**Multi-Cluster Kubernetes Operator Management with ArgoCD**
+**Multi-Cluster Kubernetes Platform Services Management with ArgoCD**
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## Overview
 
-This repository implements **best-practice GitOps** for managing Kubernetes operators across multiple AKS clusters using ArgoCD with Helm charts.
+This repository implements **best-practice GitOps** for managing Kubernetes platform services (operators, cert-manager, etc.) across multiple AKS clusters using ArgoCD with Helm charts.
 
 ### Key Features
 
@@ -34,20 +34,21 @@ This repository implements **best-practice GitOps** for managing Kubernetes oper
 
 ### Cluster Groups
 
-**Local Development** (4 operators)
+**Local Development** (5 platform services)
 - `local-dev` - Local testing (kind/minikube/k3d/Docker Desktop)
-- Operators: KEDA, RabbitMQ, OpenTelemetry, Keycloak
-- Purpose: Test operator changes locally before pushing to cloud
+- Services: cert-manager, KEDA, Keycloak, OpenTelemetry, RabbitMQ
+- Purpose: Test platform service changes locally before pushing to cloud
 
-**IKV Clusters** (2 operators)
+**IKV Clusters** (3 platform services)
 - `aks-ikv-nonprod-vnext` - Testing environment
 - `aks-ikv-nonprod` - Validation environment
 - `aks-ikv-prod` - Production environment
-- Operators: KEDA, RabbitMQ
+- Services: cert-manager, KEDA, RabbitMQ
 
-**Commonground Clusters** (4 operators)
+**Commonground Clusters** (5 platform services)
 - `aks-commonground-nonprod` - Pre-production (⚠️ TODO: Update actual name)
 - `aks-commonground-prod` - Production (⚠️ TODO: Update actual name)
+- Services: cert-manager, KEDA, Keycloak, OpenTelemetry, RabbitMQ
 - Operators: KEDA, RabbitMQ, OpenTelemetry, Keycloak
 
 ---
@@ -62,14 +63,14 @@ This repository implements **best-practice GitOps** for managing Kubernetes oper
 generators:
   - git:
       files:
-        - path: "operators/**/.argocd.yaml"
+        - path: "platform-services/**/.argocd.yaml"
 ```
 
 Benefits: Add new operator = create directory, no ApplicationSet changes needed
 
 **2. Centralized Version Management**
 ```yaml
-# operators/keda/.argocd.yaml
+# platform-services/keda/.argocd.yaml
 clusters:
   aks-ikv-nonprod-vnext:
     chartVersion: "2.14.0"  # Latest for testing
@@ -85,21 +86,22 @@ Benefits: One file to update, clear promotion path, Git tracks changes
 ```
 Chart Defaults
     ↓
-operators/{name}/values.yaml (base)
+platform-services/{name}/values.yaml (base)
     ↓
-operators/{name}/values.{cluster}.yaml (environment-specific)
+platform-services/{name}/values.{cluster}.yaml (environment-specific)
     ↓
 Final Deployment
 ```
 
 **4. Official Helm Charts**
 
-| Operator | Chart | Repository |
+| Platform Service | Chart | Repository |
 |----------|-------|------------|
+| cert-manager | `cert-manager/cert-manager` | https://charts.jetstack.io |
 | KEDA | `kedacore/keda` | https://kedacore.github.io/charts |
-| RabbitMQ | `cloudpirates/rabbitmq-operator` | https://cloudpirates.github.io/rabbitmq-operator/ |
+| Keycloak | `adfinis/keycloak-operator` | https://charts.adfinis.com |
 | OpenTelemetry | `open-telemetry/opentelemetry-operator` | https://open-telemetry.github.io/opentelemetry-helm-charts |
-| Keycloak | `codecentric/keycloakx` | https://codecentric.github.io/helm-charts |
+| RabbitMQ | `cloudpirates/rabbitmq-cluster-operator` | oci://ghcr.io/cloudpirates-io/helm-charts |
 
 ---
 
@@ -265,7 +267,7 @@ kubectl get pods -n keda-system -w
 
 ```
 .
-├── operators/                      # One directory per operator
+├── platform-services/                      # One directory per operator
 │   ├── keda/
 │   │   ├── .argocd.yaml           # Version metadata (per cluster)
 │   │   ├── values.yaml            # Base Helm values
@@ -306,7 +308,7 @@ kubectl get pods -n keda-system -w
 Each operator has this file defining versions per cluster:
 
 ```yaml
-# operators/keda/.argocd.yaml
+# platform-services/keda/.argocd.yaml
 chartName: keda
 chartRepoURL: https://kedacore.github.io/charts
 targetNamespace: keda-system
@@ -385,11 +387,11 @@ To bootstrap: `kubectl apply -f clusters/ikv/prod/root.yaml`
 ```bash
 git checkout -b upgrade-keda-2.15.0
 
-# Edit operators/keda/.argocd.yaml
-vim operators/keda/.argocd.yaml
+# Edit platform-services/keda/.argocd.yaml
+vim platform-services/keda/.argocd.yaml
 # Change: aks-ikv-nonprod-vnext: chartVersion: "2.14.0" → "2.15.0"
 
-git add operators/keda/.argocd.yaml
+git add platform-services/keda/.argocd.yaml
 git commit -m "feat(keda): upgrade to 2.15.0 in nonprod-vnext"
 git push origin upgrade-keda-2.15.0
 # Create PR, review, merge
@@ -414,10 +416,10 @@ kubectl logs -n keda-system deployment/keda-operator -f
 git checkout main && git pull
 git checkout -b promote-keda-2.15.0-nonprod
 
-# Edit operators/keda/.argocd.yaml
+# Edit platform-services/keda/.argocd.yaml
 # Change: aks-ikv-nonprod: chartVersion: "2.14.0" → "2.15.0"
 
-git add operators/keda/.argocd.yaml
+git add platform-services/keda/.argocd.yaml
 git commit -m "feat(keda): promote 2.15.0 to nonprod"
 git push origin promote-keda-2.15.0-nonprod
 # Create PR, merge
@@ -433,10 +435,10 @@ Monitor nonprod performance, run load tests
 git checkout main && git pull
 git checkout -b promote-keda-2.15.0-prod
 
-# Edit operators/keda/.argocd.yaml
+# Edit platform-services/keda/.argocd.yaml
 # Change: aks-ikv-prod: chartVersion: "2.14.0" → "2.15.0"
 
-git add operators/keda/.argocd.yaml
+git add platform-services/keda/.argocd.yaml
 git commit -m "feat(keda): promote 2.15.0 to production"
 git push origin promote-keda-2.15.0-prod
 # Create PR with thorough review
@@ -448,10 +450,10 @@ git push origin promote-keda-2.15.0-prod
 
 ```bash
 # View all versions for an operator
-yq '.clusters' operators/keda/.argocd.yaml
+yq '.clusters' platform-services/keda/.argocd.yaml
 
 # Compare versions across all operators
-for op in operators/*/; do
+for op in platform-services/*/; do
   echo "=== $(basename $op) ==="
   yq '.clusters | to_entries | .[] | .key + ": " + .value.chartVersion' $op/.argocd.yaml
 done
@@ -499,13 +501,13 @@ chartVersion: "latest"
 **1. Create operator directory**
 
 ```bash
-mkdir -p operators/my-operator
+mkdir -p platform-services/my-operator
 ```
 
 **2. Create `.argocd.yaml`**
 
 ```yaml
-# operators/my-operator/.argocd.yaml
+# platform-services/my-operator/.argocd.yaml
 chartName: my-operator
 chartRepoURL: https://charts.example.com/
 targetNamespace: my-operator-system
@@ -529,7 +531,7 @@ clusters:
 **3. Create base values**
 
 ```yaml
-# operators/my-operator/values.yaml
+# platform-services/my-operator/values.yaml
 replicaCount: 1
 
 resources:
@@ -544,7 +546,7 @@ resources:
 **4. Create environment-specific values**
 
 ```yaml
-# operators/my-operator/values.aks-ikv-prod.yaml
+# platform-services/my-operator/values.aks-ikv-prod.yaml
 replicaCount: 2  # HA for production
 
 resources:
@@ -570,7 +572,7 @@ affinity:
 **5. Commit and push**
 
 ```bash
-git add operators/my-operator/
+git add platform-services/my-operator/
 git commit -m "feat(my-operator): add new operator"
 git push origin main
 ```
@@ -582,7 +584,7 @@ git push origin main
 **Modify base values (affects all environments):**
 
 ```bash
-vim operators/keda/values.yaml
+vim platform-services/keda/values.yaml
 # Make changes
 git commit -am "config(keda): update base configuration"
 git push
@@ -591,7 +593,7 @@ git push
 **Modify environment-specific values:**
 
 ```bash
-vim operators/keda/values.aks-ikv-prod.yaml
+vim platform-services/keda/values.aks-ikv-prod.yaml
 # Make production-specific changes
 git commit -am "config(keda): increase prod resources"
 git push
@@ -604,7 +606,7 @@ ArgoCD auto-syncs changes within 3 minutes.
 **Disable for specific cluster:**
 
 ```yaml
-# operators/keda/.argocd.yaml
+# platform-services/keda/.argocd.yaml
 clusters:
   aks-ikv-nonprod-vnext:
     enabled: false  # ← Disable
@@ -658,7 +660,7 @@ kubectl top pods -n keda-system --context aks-ikv-prod
 **Operators Deployed:** KEDA, RabbitMQ, Redir, OpenTelemetry, Keycloak (5 total)
 
 **When actual cluster names are available, update:**
-- `operators/*/.argocd.yaml` (5 files)
+- `platform-services/*/.argocd.yaml` (5 files)
 - `argocd/applicationset-operators.yaml`
 
 ### Local Development Cluster
@@ -696,13 +698,13 @@ If you have the old structure with hardcoded ApplicationSets, follow these steps
 
 ```bash
 # Check operators directory exists
-ls -la operators/*/
+ls -la platform-services/*/
 
 # Check ApplicationSet exists
 ls -la argocd/applicationset-operators.yaml
 
 # Validate .argocd.yaml files
-for f in operators/**/.argocd.yaml; do
+for f in platform-services/**/.argocd.yaml; do
   yq eval '.' $f > /dev/null && echo "✓ $f" || echo "✗ $f"
 done
 ```
@@ -770,7 +772,7 @@ kubectl logs -n argocd -l app.kubernetes.io/name=argocd-applicationset-controlle
 argocd repo list
 
 # 5. Validate .argocd.yaml files
-for f in operators/**/.argocd.yaml; do
+for f in platform-services/**/.argocd.yaml; do
   echo "Validating $f"
   yq eval '.' $f > /dev/null || echo "ERROR in $f"
 done
@@ -784,7 +786,7 @@ done
 
 ```bash
 # 1. Check .argocd.yaml syntax
-yq '.clusters.aks-ikv-nonprod-vnext' operators/keda/.argocd.yaml
+yq '.clusters.aks-ikv-nonprod-vnext' platform-services/keda/.argocd.yaml
 
 # 2. Force refresh
 argocd app get keda-operator-aks-ikv-nonprod-vnext --refresh
@@ -805,7 +807,7 @@ kubectl delete application keda-operator-aks-ikv-nonprod-vnext -n argocd
 
 ```bash
 # 1. Check file naming matches cluster name
-ls operators/keda/values.aks-ikv-*
+ls platform-services/keda/values.aks-ikv-*
 
 # Expected:
 # values.aks-ikv-nonprod-vnext.yaml
@@ -813,7 +815,7 @@ ls operators/keda/values.aks-ikv-*
 # values.aks-ikv-prod.yaml
 
 # 2. Verify values file syntax
-yq eval '.' operators/keda/values.aks-ikv-prod.yaml
+yq eval '.' platform-services/keda/values.aks-ikv-prod.yaml
 
 # 3. Check Application sources
 argocd app get keda-operator-aks-ikv-prod -o yaml | grep -A 20 sources:
@@ -857,7 +859,7 @@ kubectl get crd | grep <operator>
 - Solution: Check cluster registered: `argocd cluster list`
 
 **".argocd.yaml not found"**
-- Solution: Verify file exists with dot prefix: `ls operators/*/.argocd.yaml`
+- Solution: Verify file exists with dot prefix: `ls platform-services/*/.argocd.yaml`
 
 ---
 
@@ -964,9 +966,9 @@ This GitOps infrastructure follows **industry best practices** and provides:
 ✅ **Proven Patterns** - Based on Commonground Haven+ reference  
 
 **Key Files to Remember:**
-- `operators/{name}/.argocd.yaml` - Version control
-- `operators/{name}/values.yaml` - Base configuration
-- `operators/{name}/values.{cluster}.yaml` - Environment overrides
+- `platform-services/{name}/.argocd.yaml` - Version control
+- `platform-services/{name}/values.yaml` - Base configuration
+- `platform-services/{name}/values.{cluster}.yaml` - Environment overrides
 - `clusters/{group}/{env}/root.yaml` - Bootstrap clusters
 - `argocd/applicationset-operators.yaml` - Discovery engine
 
